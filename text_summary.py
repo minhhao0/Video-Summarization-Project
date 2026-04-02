@@ -1,6 +1,4 @@
-# =========================
-# TÓM TẮT VĂN BẢN TỪ VIDEO 
-# =========================
+# TÓM TẮT VĂN BẢN TỪ VIDEO (txt,srt,vtt)
 
 # pip install transformers torch nltk sentencepiece
 
@@ -16,9 +14,7 @@ import nltk
 nltk.download('punkt')
 from nltk.tokenize import sent_tokenize
 
-# =========================
 # 1. CONFIG
-# =========================
 MODEL_NAME = "facebook/bart-large-cnn"
 
 MAX_INPUT_TOKENS = 1024
@@ -27,11 +23,9 @@ MIN_NEW_TOKENS = 60
 
 CHUNK_SIZE = 800  
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
 # 2. LOAD MODEL
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME).to(device)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
 
 # 3. ĐỌC FILE
 def read_text_file(file_path: str) -> str:
@@ -112,7 +106,7 @@ def summarize_chunk(text: str) -> str:
         max_length=MAX_INPUT_TOKENS,
         truncation=True,
         return_tensors="pt"
-    ).to(device)
+    )
 
     summary_ids = model.generate(
         inputs["input_ids"],
@@ -133,7 +127,7 @@ def summarize_long_text(text: str) -> str:
 
     token_len = len(tokenizer.encode(text, add_special_tokens=False))
 
-    # Nếu ngắn → tóm tắt luôn
+    # Nếu ngắn tóm tắt luôn
     if token_len <= MAX_INPUT_TOKENS:
         return summarize_chunk(text)
 
@@ -154,7 +148,7 @@ def summarize_long_text(text: str) -> str:
     # Ghép lại
     merged_summary = " ".join(chunk_summaries)
 
-    # LUÔN tóm tắt lần cuối
+    # tóm tắt lần cuối
     print("Đang tóm tắt lần cuối...")
     final_summary = summarize_chunk(merged_summary)
 
