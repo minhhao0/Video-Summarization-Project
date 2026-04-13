@@ -1,8 +1,9 @@
 body {
   margin: 0;
   font-family: 'Manrope', sans-serif;
-  background: #fdf8ff;
+  background: linear-gradient(135deg, #fdf8ff, #f0e6ff);
   color: #1c1a23;
+  line-height: 1.6;
 }
 
 .container {
@@ -11,76 +12,189 @@ body {
   padding: 0 20px;
 }
 
+/*HERO SECTION */
 .hero {
   text-align: center;
-  margin-top: 120px;
+  margin-top: 100px;
+  padding-bottom: 60px;
 }
 
 .hero h1 {
   font-size: 42px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #451ebb, #6d4aff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
 }
 
 .hero p {
-  color: #666;
-  margin: 20px 0;
+  color: #555;
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto 40px;
 }
 
+/* Input YouTube */
 .input-box {
   display: flex;
-  background: #eee;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50px;
-  padding: 6px;
-  max-width: 500px;
-  margin: auto;
+  padding: 8px;
+  max-width: 560px;
+  margin: 0 auto 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(109, 74, 255, 0.15);
 }
 
 .input-box input {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 10px;
+  padding: 14px 20px;
+  font-size: 16px;
   outline: none;
+  color: #1c1a23;
 }
 
+.input-box input::placeholder {
+  color: #999;
+}
+
+/* Button */
 .primary-btn {
   background: linear-gradient(135deg, #451ebb, #6d4aff);
   color: white;
   border: none;
   border-radius: 50px;
-  padding: 12px 24px;
+  padding: 14px 32px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s ease;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(69, 30, 187, 0.3);
+  white-space: nowrap;
 }
 
-.primary-btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+.primary-btn:hover:not(.disabled) {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(69, 30, 187, 0.4);
 }
 
-.primary-btn:active {
-  transform: scale(0.95);
+.primary-btn:active:not(.disabled) {
+  transform: scale(0.96);
 }
 
 .primary-btn.disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Divider */
 .divider {
-  margin: 20px 0;
+  margin: 30px 0;
   color: #888;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
+/* Upload button */
 .upload-section {
   display: flex;
   justify-content: center;
 }
 
-.summary {
+/*KẾT QUẢ*/
+.result-section {
   margin-top: 40px;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
+  padding-bottom: 80px;
+}
+
+.summary-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.topic {
+  margin-bottom: 35px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #eee;
+}
+
+.topic h2,
+.summary-text h2 {
+  font-size: 1.35rem;
+  color: #451ebb;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-content {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2c1e5e;
+  line-height: 1.4;
+}
+
+.summary-text {
+  margin-top: 10px;
+}
+
+.summary-content {
+  background: #f8f7ff;
+  padding: 25px;
+  border-radius: 16px;
+  border-left: 5px solid #6d4aff;
+}
+
+.summary-content p {
+  margin-bottom: 14px;
+  color: #333;
+}
+
+/* Loading */
+.loading-result {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0d4ff;
+  border-top: 5px solid #6d4aff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 34px; }
+  .hero { margin-top: 80px; }
+  .input-box { 
+    flex-direction: column; 
+    border-radius: 20px; 
+    padding: 6px;
+  }
+  .input-box input { padding: 16px; }
+  .primary-btn { 
+    width: 100%; 
+    margin-top: 8px; 
+    padding: 16px;
+  }
+  .summary-box { padding: 25px 20px; }
 }
