@@ -1,6 +1,7 @@
+
 # TÓM TẮT VĂN BẢN TỪ VIDEO (txt,srt,vtt)
 
-# pip install transformers torch nltk sentencepiece
+# pip install transformers torch sentencepiece
 
 import re
 import os
@@ -9,23 +10,20 @@ from typing import List
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# NLP
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import sent_tokenize
+device = "cpu"
 
 # 1. CONFIG
-MODEL_NAME = "facebook/bart-large-cnn"
+MODEL_NAME = "csebuetnlp/mT5_multilingual_XLSum"
 
-MAX_INPUT_TOKENS = 1024
+MAX_INPUT_TOKENS = 512
 MAX_NEW_TOKENS = 150
 MIN_NEW_TOKENS = 60
-
-CHUNK_SIZE = 800  
+CHUNK_SIZE = 250
 
 # 2. LOAD MODEL
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME).to(device)
+model.eval()
 
 # 3. ĐỌC FILE
 def read_text_file(file_path: str) -> str:
@@ -42,7 +40,7 @@ def read_text_file(file_path: str) -> str:
 
     return content
 
-# 4. LÀM SẠCH SUBTITLE
+# 4. CLEAN SUBTITLE
 def clean_subtitle_text(text: str) -> str:
     lines = text.splitlines()
     cleaned_lines = []
@@ -68,22 +66,29 @@ def clean_subtitle_text(text: str) -> str:
 
     return text
 
-# 5. LÀM SẠCH VĂN BẢN
+# 5. CLEAN TEXT
 def normalize_text(text: str) -> str:
-    text = re.sub(r"\s+", " ", text)
-    text = re.sub(r"([.!?])\1+", r"\1", text)
-    return text.strip()
+    return re.sub(r"\s+", " ", text).strip()
 
-# 6. CHIA ĐOẠN THEO CÂU 
+# 6. SPLIT SENTENCES 
+def split_sentences(text: str):
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    return [s.strip() for s in sentences if s.strip()]
+
+# 7. CHIA CHUNK
 def split_text_into_chunks(text: str, max_tokens: int = CHUNK_SIZE) -> List[str]:
-    sentences = sent_tokenize(text)
+    sentences = split_sentences(text)
 
     chunks = []
     current_chunk = ""
 
     for sentence in sentences:
         temp = current_chunk + " " + sentence
-        token_count = len(tokenizer.encode(temp, add_special_tokens=False))
+
+        if len(temp) < 1000:
+            token_count = len(tokenizer.encode(temp, add_special_tokens=False))
+        else:
+            token_count = max_tokens + 1
 
         if token_count <= max_tokens:
             current_chunk = temp
@@ -97,7 +102,7 @@ def split_text_into_chunks(text: str, max_tokens: int = CHUNK_SIZE) -> List[str]
 
     return chunks
 
-# 7. TÓM TẮT 1 ĐOẠN
+# 8. TÓM TẮT 1 CHUNK 
 def summarize_chunk(text: str) -> str:
     text = normalize_text(text)
 
@@ -106,36 +111,40 @@ def summarize_chunk(text: str) -> str:
         max_length=MAX_INPUT_TOKENS,
         truncation=True,
         return_tensors="pt"
-    )
+    ).to(device)
 
-    summary_ids = model.generate(
-        inputs["input_ids"],
-        attention_mask=inputs["attention_mask"],
-        max_new_tokens=MAX_NEW_TOKENS,
-        min_new_tokens=MIN_NEW_TOKENS,
-        num_beams=4,
-        length_penalty=2.0,
-        no_repeat_ngram_size=3,
-        early_stopping=True
-    )
+    with torch.no_grad():
+        summary_ids = model.generate(
+            inputs["input_ids"],
+            attention_mask=inputs["attention_mask"],
+            max_new_tokens=MAX_NEW_TOKENS,
+            min_new_tokens=MIN_NEW_TOKENS,
+            num_beams=3,
+            length_penalty=1.0,
+            no_repeat_ngram_size=3,
+            early_stopping=True
+        )
 
-    return tokenizer.decode(summary_ids[0], skip_special_tokens=True).strip()
+    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
-# 8. TÓM TẮT VĂN BẢN DÀI
+    return summary.strip()
+
+# 9. TÓM TẮT VĂN BẢN DÀI
 def summarize_long_text(text: str) -> str:
     text = normalize_text(text)
 
     token_len = len(tokenizer.encode(text, add_special_tokens=False))
 
-    # Nếu ngắn tóm tắt luôn
+    # nếu ngắn → tóm tắt luôn
     if token_len <= MAX_INPUT_TOKENS:
         return summarize_chunk(text)
 
-    # Chia đoạn
+    # chia đoạn
     chunks = split_text_into_chunks(text)
     print(f"Số đoạn: {len(chunks)}")
 
     chunk_summaries = []
+
     for i, chunk in enumerate(chunks, 1):
         print(f"Đang xử lý đoạn {i}/{len(chunks)}...")
         try:
@@ -145,18 +154,18 @@ def summarize_long_text(text: str) -> str:
         except Exception as e:
             print(f"Lỗi đoạn {i}: {e}")
 
-    # Ghép lại
-    merged_summary = " ".join(chunk_summaries)
+    #  GHÉP LẠI 
+    final_summary = " ".join(chunk_summaries)
 
-    # tóm tắt lần cuối
-    print("Đang tóm tắt lần cuối...")
-    final_summary = summarize_chunk(merged_summary)
+    # clean format
+    final_summary = final_summary.replace(" .", ".")
+    final_summary = final_summary.replace(" ,", ",")
 
-    return final_summary
+    return final_summary.strip()
 
-# 9. MAIN
+# 10. MAIN
 if __name__ == "__main__":
-    input_file = "test.txt"
+    input_file = "test1.txt"
 
     if not os.path.exists(input_file):
         print("Không tìm thấy file.")
