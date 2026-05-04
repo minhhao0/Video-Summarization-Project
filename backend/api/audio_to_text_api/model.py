@@ -1,5 +1,4 @@
-import os
-import torch
+
 import torch
 import librosa
 from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq
@@ -7,8 +6,8 @@ import subprocess
 from pydub import AudioSegment
 import os
 class Mp4_to_text:
-    def __init__(self,model_id="D:\\Phowisper", language = "vi", time_chunk_mp3=30 * 1000, folder_path_chunk = "../../../audio_chunk/filemp3_chunk", output_file_path_mp3 = "../../../audio/output3.mp3",
-                 output_file_path_txt = "../../../text/output.txt", gpu=False):
+    def __init__(self,model_id="D:\\Phowisper", language = "vi", time_chunk_mp3=30 * 1000, folder_path_chunk = "../../audio_chunk/filemp3_chunk", output_file_path_mp3 = "../../audio/output3.mp3",
+                 output_file_path_txt = "../../text/output.txt", gpu=False):
         self.model=AutoModelForSpeechSeq2Seq.from_pretrained(model_id)
         self.model.config.tie_word_embeddings = False
         self.processor = AutoProcessor.from_pretrained(model_id)

@@ -20,9 +20,19 @@ In Window can use this command then restart your program
 ### 5. Install requirements library
 `pip install -r requirements.txt`
 ### 6. Install nodejs.
-Down load Node js from [Node Js]()
-### Start FAST Api backend
-`uvicorn main:app --reload`
+Down load Node js from [Node Js](https://nodejs.org/en/download)
+then 
+```
+cd frontend
+npm install
+npm start
+```
+### 7. Start FAST Api backend
+```
+cd backend/api
+uvicorn main:app --reload
+```
+
 
 
 
