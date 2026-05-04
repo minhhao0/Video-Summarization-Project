@@ -25,7 +25,7 @@ export default function UI() {
       setLoadingSummarize(true);
       resetResult();
 
-      const res = await fetch("http://localhost:5000/api/summarize", {
+      const res = await fetch("http://localhost:8000/api/summary-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
@@ -49,13 +49,13 @@ export default function UI() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("video", file);
+    formData.append("file", file);
 
     try {
       setLoadingUpload(true);
       resetResult();
 
-      const res = await fetch("http://localhost:5000/api/upload", {
+      const res = await fetch("http://localhost:8000/api/summary-file", {
         method: "POST",
         body: formData,
       });
