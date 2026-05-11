@@ -25,10 +25,10 @@ export default function UI() {
       setLoadingSummarize(true);
       resetResult();
 
-      const res = await fetch("http://localhost:8000/api/summary-link", {
+      const res = await fetch("https://fifth-scanner-riptide.ngrok-free.dev/api/summary-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ 'url':url }),
       });
 
       const data = await res.json();
@@ -55,7 +55,7 @@ export default function UI() {
       setLoadingUpload(true);
       resetResult();
 
-      const res = await fetch("http://localhost:8000/api/summary-file", {
+      const res = await fetch("https://fifth-scanner-riptide.ngrok-free.dev/api/summary-file", {
         method: "POST",
         body: formData,
       });

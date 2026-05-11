@@ -32,6 +32,15 @@ npm start
 cd backend/api
 uvicorn main:app --reload
 ```
+## RUNNING ON GG COLAB
+### Run deploy_server.ipynb on gg colab. 
+### 1. Go to [Ngrok Site](https://ngrok.com/) to get your authentication token
+### 2. Paste your token in 
+```
+NGROK_AUTH_TOKEN = 'your token'
+```
+### 3. Run notebook and start front-end
+### NOTICE: Your must enable your GPU on GG Colab to increase speed.
 
 
 
