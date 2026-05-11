@@ -1,4 +1,3 @@
-
 import torch
 import librosa
 from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq
@@ -146,12 +145,6 @@ class Mp4_to_text:
         # return result
         full_text = " ".join(result)
         self.save_to_txt(full_text, self.op_file_txt)
-        for f in files:
-            print(f)
-            if os.path.isfile(f):
-                os.remove(f)
-            else:
-                continue
         return full_text
 
 

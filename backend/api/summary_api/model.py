@@ -1,7 +1,6 @@
 import re
 import os
 from typing import List
-
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 MAX_INPUT_TOKENS = 512
@@ -145,18 +144,6 @@ class Summarizer:
         final_summary = final_summary.replace(" ,", ",")
 
         return final_summary.strip()
-    def run(self,file_path):
-        input_file = file_path
-
-        if not os.path.exists(input_file):
-            print("Không tìm thấy file.")
-            return
-
-        text = self.read_text_file(input_file)
-
-        if not text.strip():
-            print("File không có nội dung hợp lệ.")
-            exit()
-
+    def run(self,text):
         summary = self.summarize_long_text(text)
         return summary
